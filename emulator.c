@@ -7,16 +7,6 @@ unsigned char memory[0x10000];
 #define EVENT_BUFFER_SIZE 100
 XEvent eventBuffer[EVENT_BUFFER_SIZE];
 
-void writeMemory(unsigned short address, unsigned char data) {
-    if (address == 0xffff) {
-        
-    }
-}
-
-unsigned char readMemory(unsigned short address) {
-
-}
-
 void updateFramebuffer() {
     for (unsigned short y = 0; y < 192; y++) {
             for (unsigned short x = 0; x < 256; x++) {
