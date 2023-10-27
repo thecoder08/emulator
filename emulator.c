@@ -4,6 +4,18 @@
 #include <xgfx/drawing.h>
 
 unsigned char memory[0x10000];
+#define EVENT_BUFFER_SIZE 100
+XEvent eventBuffer[EVENT_BUFFER_SIZE];
+
+void writeMemory(unsigned short address, unsigned char data) {
+    if (address == 0xffff) {
+        
+    }
+}
+
+unsigned char readMemory(unsigned short address) {
+
+}
 
 void updateFramebuffer() {
     for (unsigned short y = 0; y < 192; y++) {
@@ -26,9 +38,12 @@ int main(int argc, char** argv) {
     }
     initWindow(1024, 768, "Emulator");
     for (int pulse = 0; 1; pulse = (pulse < 100000 ? pulse + 1 : 0)) {
-        XEvent event;
-        if (checkWindowEvents(&event) == 2) {
-            return 0;
+        int eventsRead = checkWindowEvents(eventBuffer, EVENT_BUFFER_SIZE);
+        for (int i = 0; i < eventsRead; i++) {
+            XEvent event = eventBuffer[i];
+            if (event.type == ClosedWindow) {
+                return 0;
+            }
         }
         unsigned char instruction = memory[programCounter];
         programCounter++;

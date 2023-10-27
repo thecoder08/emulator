@@ -1,23 +1,32 @@
-color = 1000
+define color 0x1000
+define startingColor 0x1001
+define addressLow 0x0004
+define addressHigh 0x0005
 
-label loop ; loop = 0000
-load color ; 02 00 10
-store 4000(addressLow,addressHigh) ; 07 00 40 (addressLow = 0004)(addressHigh = 0005)
-add #1 ; 03 01
-store color ; 07 00 10
-load addressLow ; 02 04 00
-add #1 ; 03 01
-store addressLow ; 07 04 00
-jnz loop ; 09 00 00
-load addressHigh ; 02 05 00
-add #1 ; 03 01
-store addressHigh ; 07 05 00
-load color ; 02 00 10
-add #1 ; 03 01
-store color ; 07 00 10
-load addressHigh ; 02 05 00
-jnz loop ; 09 00 00
-load color ; 02 00 10
-add #1 ; 03 01
-store color ; 07 00 10
-jmp loop ; 08 00 00
+label loop
+load color
+store 0x4000 ; (addressLow = 0004)(addressHigh = 0005)
+add # 1
+store color
+load addressLow
+add # 1
+store addressLow
+jnz loop
+
+; if addressLow overflowed, increase addressHigh. Also increase color to make diagonal lines
+load color
+add # 1
+store color
+load addressHigh
+add # 1
+store addressHigh
+jnz loop
+
+; if addressHigh overflowed, reset it. Also increase startingColor and set color to it to make movement
+load # 0x40
+store addressHigh
+load startingColor
+add # 1
+store startingColor
+store color
+jmp loop
