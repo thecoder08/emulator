@@ -1,10 +1,10 @@
 define color 0x1000
 define startingColor 0x1001
-define addressLow 0x0004
-define addressHigh 0x0005
 
 label loop
 load color
+label addressLow 1 ; label with an offset; allows modification of code during runtime
+label addressHigh 2
 store 0x4000 ; (addressLow = 0004)(addressHigh = 0005)
 add # 1
 store color

@@ -37,6 +37,10 @@ int main(int argc, char** argv) {
     char* line = strtok_r(code, "\n", &savedLine);
     for (; line != NULL; line = strtok_r(NULL, "\n", &savedLine)) {
         char* opcode = strtok(line, " ");
+        if (strcmp(opcode, "nop") == 0) {
+            machineCode[machineCodeIndex] = 0; machineCodeIndex++;
+            continue;
+        }
         if (strcmp(opcode, "load") == 0) {
             // immidiate
             char* token2 = strtok(NULL, " ");
@@ -108,7 +112,13 @@ int main(int argc, char** argv) {
         }
         if (strcmp(opcode, "label") == 0) {
             strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
-            labelTable[labelIndex].address = machineCodeIndex;
+            char* offset = strtok(NULL, " ");
+            if (offset == NULL) {
+              labelTable[labelIndex].address = machineCodeIndex;
+            }
+            else {
+              labelTable[labelIndex].address = machineCodeIndex + (unsigned short)strtol(offset, NULL, 0);
+            }
             labelIndex++;
             continue;
         }
