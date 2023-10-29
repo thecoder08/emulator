@@ -9,6 +9,7 @@ typedef struct {
 } Label;
 
 unsigned char code[10000];
+unsigned char codeCopy[10000];
 unsigned char machineCode[0x10000];
 unsigned short machineCodeIndex = 0;
 Label labelTable[100];
@@ -29,12 +30,93 @@ unsigned short findAddress(char* token) {
 }
 
 int main(int argc, char** argv) {
+    // load source code
     if(loadFile(argv[1], code)) {
         printf("Failed to open code file \"%s\"!\n", argv[1]);
         return 1;
     }
+    // make copy of code for second pass
+    strcpy(codeCopy, code);
+    // first pass: labels and defines
     char* savedLine = NULL;
     char* line = strtok_r(code, "\n", &savedLine);
+    for (; line != NULL; line = strtok_r(NULL, "\n", &savedLine)) {
+        char* opcode = strtok(line, " ");
+        if (strcmp(opcode, "nop") == 0) {
+            machineCodeIndex += 1;
+            continue;
+        }
+        if (strcmp(opcode, "load") == 0) {
+            // immidiate
+            char* token2 = strtok(NULL, " ");
+            if (strcmp(token2, "#") == 0) {
+                machineCodeIndex += 2;
+            }
+            // memory
+            else {
+                machineCodeIndex += 3;
+            }
+            continue;
+        }
+        if (strcmp(opcode, "add") == 0) {
+            // immidiate
+            char* token2 = strtok(NULL, " ");
+            if (strcmp(token2, "#") == 0) {
+                machineCodeIndex += 2;
+            }
+            // memory
+            else {
+                machineCodeIndex += 3;
+            }
+            continue;
+        }
+        if (strcmp(opcode, "sub") == 0) {
+            // immidiate
+            char* token2 = strtok(NULL, " ");
+            if (strcmp(token2, "#") == 0) {
+                machineCodeIndex += 2;
+            }
+            // memory
+            else {
+                machineCodeIndex += 3;
+            }
+            continue;
+        }
+        if (strcmp(opcode, "store") == 0) {
+            machineCodeIndex += 3;
+            continue;
+        }
+        if (strcmp(opcode, "jmp") == 0) {
+            machineCodeIndex += 3;
+            continue;
+        }
+        if (strcmp(opcode, "jnz") == 0) {
+            machineCodeIndex += 3;
+            continue;
+        }
+        if (strcmp(opcode, "label") == 0) {
+            strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
+            char* offset = strtok(NULL, " ");
+            if (offset == NULL) {
+              labelTable[labelIndex].address = machineCodeIndex;
+            }
+            else {
+              labelTable[labelIndex].address = machineCodeIndex + (unsigned short)strtol(offset, NULL, 0);
+            }
+            labelIndex++;
+            continue;
+        }
+        if (strcmp(opcode, "define") == 0) {
+            strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
+            labelTable[labelIndex].address = findAddress(strtok(NULL, " "));
+            labelIndex++;
+            continue;
+        }
+    }
+    // second pass: instructions
+    machineCodeIndex = 0;
+    savedLine = NULL;
+    line = strtok_r(codeCopy, "\n", &savedLine);
     for (; line != NULL; line = strtok_r(NULL, "\n", &savedLine)) {
         char* opcode = strtok(line, " ");
         if (strcmp(opcode, "nop") == 0) {
@@ -78,12 +160,12 @@ int main(int argc, char** argv) {
             char* token2 = strtok(NULL, " ");
             if (strcmp(token2, "#") == 0) {
                 machineCode[machineCodeIndex] = 5; machineCodeIndex++;
-                machineCode[machineCodeIndex] = strtol(token2, NULL, 0); machineCodeIndex++;
+                machineCode[machineCodeIndex] = strtol(strtok(NULL, " "), NULL, 0); machineCodeIndex++;
             }
             // memory
             else {
                 machineCode[machineCodeIndex] = 6; machineCodeIndex++;
-                unsigned short address = findAddress(strtok(NULL, " "));
+                unsigned short address = findAddress(token2);
                 machineCode[machineCodeIndex] = address; machineCodeIndex++;
                 machineCode[machineCodeIndex] = address >> 8; machineCodeIndex++;
             }
@@ -110,26 +192,16 @@ int main(int argc, char** argv) {
             machineCode[machineCodeIndex] = address >> 8; machineCodeIndex++;
             continue;
         }
+        // we still have these to avoid a warning
         if (strcmp(opcode, "label") == 0) {
-            strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
-            char* offset = strtok(NULL, " ");
-            if (offset == NULL) {
-              labelTable[labelIndex].address = machineCodeIndex;
-            }
-            else {
-              labelTable[labelIndex].address = machineCodeIndex + (unsigned short)strtol(offset, NULL, 0);
-            }
-            labelIndex++;
             continue;
         }
         if (strcmp(opcode, "define") == 0) {
-            strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
-            labelTable[labelIndex].address = findAddress(strtok(NULL, " "));
-            labelIndex++;
             continue;
         }
         printf("WARNING: ignoring opcode %s\n", opcode);
     }
+    // save output file
     if (saveFile("output.bin", machineCode, machineCodeIndex)) {
         printf("Failed to save binary file!\n");
         return 1;

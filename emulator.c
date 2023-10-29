@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     initWindow(1024, 768, "Emulator");
-    for (int pulse = 0; 1; pulse = (pulse < 100000 ? pulse + 1 : 0)) {
+    for (int pulse = 0; 1; pulse = (pulse < 10000 ? pulse + 1 : 0)) {
         int eventsRead = checkWindowEvents(eventBuffer, EVENT_BUFFER_SIZE);
         for (int i = 0; i < eventsRead; i++) {
             XEvent event = eventBuffer[i];
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
             }
             break;
         }
-        // update graphics every 500 clock cycles
+        // update graphics every 10000 instructions
         if (pulse == 0) {
             updateFramebuffer();
             updateWindow();
