@@ -13,7 +13,7 @@ gcc emulator.c loadfile.c -lxgfx -o emulator
 ```
 The emulator requires [libxgfx](https://github.com/thecoder08/xgfx) to display graphics.
 ## Instruction set
-If an instruction takes an address as an operand, the first byte should be the high byte, followed by the low byte. This makes it a little-endian architecture. The opcodes of all instruction for the processor are as follows:
+If an instruction takes an address as an operand, the first byte should be the high byte, followed by the low byte. This makes it a little-endian architecture. The opcodes of all instructions for the processor are as follows:
 ```
 0x00 - No operation
 0x01 - Load immidiate: takes one byte operand: the number to load into the accumulator.
@@ -50,7 +50,7 @@ jnz
 ```
 Each operation translates to a machine code instruction. The opcode of load, add, and sub instructions depends on whether the operation is followed by a hash symbol (immidiate value). Any operation not in this list will be ignored by the assembler, allowing for comments.
 ### Operands
-Each operand may be a number parsable by the C `strtol` function. It should be no greater that the largest possible integer for the type of operand requested, e.g. 65535 (0xFFFF) for 16-bit operands, or 256 (0xFF) for 8-bit operands. It may also be a symbol, defined by the `define` or `label` commands. Any extra operands for an operation will be ignored by the assembler.
+Each operand may be a number parsable by the C `strtol` function. It should be no greater that the largest possible integer for the type of operand requested, e.g. 65535 (0xFFFF) for 16-bit operands, or 255 (0xFF) for 8-bit operands. It may also be a symbol, defined by the `define` or `label` commands. Any extra operands for an operation will be ignored by the assembler.
 ### Symbols
 Symbols can be defined by the `define` or `label` commands. These commands do not translate into machine code instructions.
 
