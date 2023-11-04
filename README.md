@@ -83,3 +83,5 @@ By calling the emulator with the compiled binary program, the program will be lo
 ./emulator [program-file]
 ```
 This should open a window that displays the contents of the framebuffer. By closing the window, the emulator stops.
+### Update
+An additional parameter can be passed to the emulator that will enable the experimental 8-bit address bus with basic 8x8 black and white graphics. (It doesn't matter what this parameter is.) This is to allow testing for my future Minecraft redstone computer. To test it, assemble and run the `a8test.asm` script.

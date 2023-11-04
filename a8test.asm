@@ -1,0 +1,6 @@
+label loop
+load # 0xaa
+store 0xf8
+load # 0x55
+store 0xf8
+jmp loop
