@@ -73,8 +73,14 @@ int main(int argc, char** argv) {
 
             // load from memory
             case 2:
-            accumulator = memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
-            programCounter += 2;
+            if (a8mode) {
+                accumulator = memory[memory[programCounter]];
+                programCounter++;
+            }
+            else {
+                accumulator = memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
+                programCounter += 2;
+            }
             break;
 
             // add immediate
@@ -85,8 +91,14 @@ int main(int argc, char** argv) {
 
             // add from memory
             case 4:
-            accumulator += memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
-            programCounter += 2;
+            if (a8mode) {
+                accumulator += memory[memory[programCounter]];
+                programCounter++;
+            }
+            else {
+                accumulator += memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
+                programCounter += 2;
+            }
             break;
 
             // subtract immediate
@@ -97,28 +109,55 @@ int main(int argc, char** argv) {
 
             // subtract from memory
             case 6:
-            accumulator -= memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
-            programCounter += 2;
+            if (a8mode) {
+                accumulator -= memory[memory[programCounter]];
+                programCounter++;
+            }
+            else {
+                accumulator -= memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
+                programCounter += 2;
+            }
             break;
 
             // store
             case 7:
-            memory[memory[programCounter] | (memory[programCounter + 1] << 8)] = accumulator;
-            programCounter += 2;
+            if (a8mode) {
+                memory[memory[programCounter]] = accumulator;
+                programCounter++;
+            }
+            else {
+                memory[memory[programCounter] | (memory[programCounter + 1] << 8)] = accumulator;
+                programCounter += 2;
+            }
             break;
 
             // unconditional jump
             case 8:
-            programCounter = memory[programCounter] | (memory[programCounter + 1] << 8);
+            if (a8mode) {
+                programCounter = memory[programCounter];
+            }
+            else {
+                programCounter = memory[programCounter] | (memory[programCounter + 1] << 8);
+            }
             break;
 
             // jump if not zero
             case 9:
-            if (accumulator != 0) {
-                programCounter = memory[programCounter] | (memory[programCounter + 1] << 8);
+            if (a8mode) {
+                if (accumulator != 0) {
+                    programCounter = memory[programCounter];
+                }
+                else {
+                    programCounter++;
+                }
             }
             else {
-                programCounter += 2;
+                if (accumulator != 0) {
+                    programCounter = memory[programCounter] | (memory[programCounter + 1] << 8);
+                }
+                else {
+                    programCounter += 2;
+                }
             }
             break;
         }
