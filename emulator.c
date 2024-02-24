@@ -4,8 +4,6 @@
 #include <xgfx/drawing.h>
 
 unsigned char memory[0x10000];
-#define EVENT_BUFFER_SIZE 100
-XEvent eventBuffer[EVENT_BUFFER_SIZE];
 unsigned char a8mode = 0;
 
 void updateFramebuffer() {
@@ -55,10 +53,9 @@ int main(int argc, char** argv) {
         }
     }
     for (int pulse = 0; 1; pulse = (pulse < 10000 ? pulse + 1 : 0)) {
-        int eventsRead = checkWindowEvents(eventBuffer, EVENT_BUFFER_SIZE);
-        for (int i = 0; i < eventsRead; i++) {
-            XEvent event = eventBuffer[i];
-            if (event.type == ClosedWindow) {
+        Event event;
+        while (checkWindowEvent(&event)) {
+            if (event.type == WINDOW_CLOSE) {
                 return 0;
             }
         }
