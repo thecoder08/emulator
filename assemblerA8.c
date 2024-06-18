@@ -156,6 +156,16 @@ int main(int argc, char** argv) {
             machineCode[machineCodeIndex] = findAddress(strtok(NULL, " ")); machineCodeIndex++;
             continue;
         }
+        if (strcmp(opcode, "jl") == 0) {
+            machineCode[machineCodeIndex] = 10; machineCodeIndex++;
+            machineCode[machineCodeIndex] = findAddress(strtok(NULL, " ")); machineCodeIndex++;
+            continue;
+        }
+        if (strcmp(opcode, "rl") == 0) {
+            machineCode[machineCodeIndex] = 11; machineCodeIndex++;
+            machineCode[machineCodeIndex] = findAddress(strtok(NULL, " ")); machineCodeIndex++;
+            continue;
+        }
         // we still have these to avoid a warning
         if (strcmp(opcode, "label") == 0) {
             continue;
