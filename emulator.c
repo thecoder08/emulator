@@ -6,6 +6,22 @@
 unsigned char memory[0x10000];
 unsigned char a8mode = 0;
 
+unsigned char instructions[][7] = {
+    "nop",
+    "load #",
+    "load -",
+    "add #",
+    "add -",
+    "sub #",
+    "sub -",
+    "store",
+    "jmp",
+    "jnz",
+    "jl",
+    "rl",
+    "break"
+};
+
 void updateFramebuffer() {
     if (a8mode) {
         for (unsigned char y = 0; y < 8; y++) {
@@ -39,6 +55,7 @@ int main(int argc, char** argv) {
     }
     unsigned char accumulator = 0;
     unsigned short programCounter = 0;
+    unsigned short linkRegister = 0;
     if(loadFile(argv[1], memory)) {
         printf("Failed to open program file \"%s\"!\n", argv[1]);
         return 1;
@@ -48,7 +65,7 @@ int main(int argc, char** argv) {
     }
     else {
         initWindow(1024, 768, "Emulator (A16 mode)");
-        if(loadFile("lenna-a16.data", memory + 0x4000)) {
+        if (loadFile("lenna-a16.data", memory + 0x4000)) {
             printf("Failed to load Lenna startup image\n");
         }
     }
@@ -156,6 +173,39 @@ int main(int argc, char** argv) {
                     programCounter += 2;
                 }
             }
+            break;
+
+            // jump with link
+            case 10:
+            if (a8mode) {
+                linkRegister = programCounter + 2;
+                programCounter = memory[programCounter];
+            }
+            else {
+                linkRegister = programCounter + 3;
+                programCounter = memory[programCounter] | (memory[programCounter + 1] << 8);
+            }
+            break;
+
+            // return to link
+            case 11:
+            programCounter = linkRegister;
+            break;
+
+            // breakpoint
+            case 12:
+            printf("variables: %x, %x, %x, %x, %x, %x, %x\n", memory[0x1000], memory[0x1001], memory[0x1002], memory[0x1003], memory[0x1004], memory[0x1005], memory[0x1006]);
+            printf("snake:\n");
+            for (int i = 0; i < 50; i++) {
+                printf("x: %d, y: %d\n", memory[0x1007 + (i * 2)], memory[0x1007 + (i * 2) + 1]);
+            }
+            printf("A: %d, PC: %d, instruction: %s\n", accumulator, programCounter, instructions[instruction]);
+            updateFramebuffer();
+            updateWindow();
+            getchar();
+            break;
+
+            default:
             break;
         }
         // update graphics every 10000 instructions

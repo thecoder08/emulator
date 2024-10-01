@@ -27,6 +27,7 @@ If an instruction takes an address as an operand, the first byte should be the h
 0x09 - Conditional jump: takes two byte operand: the address to which to jump IF the accumulator does not equal zero.
 0x0A - Jump with link: takes two byte operand: the address to which to jump. Also sets the link register with the address of the next instruction.
 0x0B - Return to link: takes no operand. Jumps to the address stored in the link register.
+0x0C - Breakpoint: takes no operand. Pauses execution of the program until an action is taken. (For debugging purposes)
 ```
 Any other instruction opcodes have no operation.
 ## Assembler syntax
@@ -51,6 +52,7 @@ jmp
 jnz
 jl
 rl
+break
 ```
 Each operation translates to a machine code instruction. The opcode of load, add, and sub instructions depends on whether the operation is followed by a hash symbol (immidiate value). Any operation not in this list will be ignored by the assembler, allowing for comments.
 ### Operands

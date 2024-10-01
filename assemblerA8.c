@@ -70,8 +70,26 @@ int main(int argc, char** argv) {
             machineCodeIndex += 2;
             continue;
         }
+        if (strcmp(opcode, "jl") == 0) {
+            machineCodeIndex += 2;
+            continue;
+        }
+        if (strcmp(opcode, "rl") == 0) {
+            machineCodeIndex += 1;
+            continue;
+        }
+        if (strcmp(opcode, "break") == 0) {
+            machineCodeIndex += 1;
+            continue;
+        }
         if (strcmp(opcode, "label") == 0) {
             strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
+            for (int i = 0; i < labelIndex; i++) {
+                if (strcmp(labelTable[labelIndex].name, labelTable[i].name) == 0) {
+                    printf("WARNING: existing label %s\n", labelTable[labelIndex].name);
+                    break;
+                }
+            }
             char* offset = strtok(NULL, " ");
             if (offset == NULL) {
               labelTable[labelIndex].address = machineCodeIndex;
@@ -163,7 +181,10 @@ int main(int argc, char** argv) {
         }
         if (strcmp(opcode, "rl") == 0) {
             machineCode[machineCodeIndex] = 11; machineCodeIndex++;
-            machineCode[machineCodeIndex] = findAddress(strtok(NULL, " ")); machineCodeIndex++;
+            continue;
+        }
+        if (strcmp(opcode, "break") == 0) {
+            machineCode[machineCodeIndex] = 12; machineCodeIndex++;
             continue;
         }
         // we still have these to avoid a warning
