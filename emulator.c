@@ -5,8 +5,9 @@
 
 unsigned char memory[0x10000];
 unsigned char a8mode = 0;
+unsigned char input = 0;
 
-unsigned char instructions[][7] = {
+unsigned char* instructions[] = {
     "nop",
     "load #",
     "load -",
@@ -19,7 +20,9 @@ unsigned char instructions[][7] = {
     "jnz",
     "jl",
     "rl",
-    "break"
+    "break",
+    "and #",
+    "and -"
 };
 
 void updateFramebuffer() {
@@ -75,7 +78,38 @@ int main(int argc, char** argv) {
             if (event.type == WINDOW_CLOSE) {
                 return 0;
             }
+            if (event.type == KEY_CHANGE) {
+                if (event.keychange.state) {
+                    if (event.keychange.key == 103) { // up
+                        input |= 0x01;
+                    }
+                    if (event.keychange.key == 108) { // down
+                        input |= 0x02;
+                    }
+                    if (event.keychange.key == 105) { // left
+                        input |= 0x04;
+                    }
+                    if (event.keychange.key == 106) { // right
+                        input |= 0x08;
+                    }
+                }
+                else {
+                    if (event.keychange.key == 103) { // up
+                        input &= ~0x01;
+                    }
+                    if (event.keychange.key == 108) { // down
+                        input &= ~0x02;
+                    }
+                    if (event.keychange.key == 105) { // left
+                        input &= ~0x04;
+                    }
+                    if (event.keychange.key == 106) { // right
+                        input &= ~0x08;
+                    }
+                }
+            }
         }
+        memory[0x3fff] = input; // input register
         unsigned char instruction = memory[programCounter];
         programCounter++;
         switch(instruction) {
@@ -203,6 +237,24 @@ int main(int argc, char** argv) {
             updateFramebuffer();
             updateWindow();
             getchar();
+            break;
+
+            // and immediate
+            case 13:
+            accumulator &= memory[programCounter];
+            programCounter++;
+            break;
+
+            // and from memory
+            case 14:
+            if (a8mode) {
+                accumulator &= memory[memory[programCounter]];
+                programCounter++;
+            }
+            else {
+                accumulator &= memory[memory[programCounter] | (memory[programCounter + 1] << 8)];
+                programCounter += 2;
+            }
             break;
 
             default:

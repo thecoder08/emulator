@@ -28,6 +28,8 @@ If an instruction takes an address as an operand, the first byte should be the h
 0x0A - Jump with link: takes two byte operand: the address to which to jump. Also sets the link register with the address of the next instruction.
 0x0B - Return to link: takes no operand. Jumps to the address stored in the link register.
 0x0C - Breakpoint: takes no operand. Pauses execution of the program until an action is taken. (For debugging purposes)
+0x0D - Bitwise AND immidiate: takes one byte operand: the number to AND with the accumulator.
+0x0E - Bitwise AND memory: takes two byte operand: the address from which to AND with the accumulator.
 ```
 Any other instruction opcodes have no operation.
 ## Assembler syntax
@@ -53,6 +55,7 @@ jnz
 jl
 rl
 break
+and
 ```
 Each operation translates to a machine code instruction. The opcode of load, add, and sub instructions depends on whether the operation is followed by a hash symbol (immidiate value). Any operation not in this list will be ignored by the assembler, allowing for comments.
 ### Operands
@@ -89,5 +92,11 @@ By calling the emulator with the compiled binary program, the program will be lo
 ./emulator [program-file]
 ```
 This should open a window that displays the contents of the framebuffer. By closing the window, the emulator stops.
+
+There is an input register at address 0x3FFF. Reading this register gives a bit-mask representing which arrow keys are currently pressed down.
+- Bit 1 (0x01) - Up
+- Bit 2 (0x02) - Down
+- Bit 3 (0x04) - Left
+- Bit 4 (0x08) - Right
 ### Update
 An additional parameter can be passed to the emulator that will enable the experimental 8-bit address bus with basic 8x8 black and white graphics. (It doesn't matter what this parameter is.) This is to allow testing for my future Minecraft redstone computer. To test it, assemble and run the `a8test.asm` script using the `assemblerA8.c` assembler.

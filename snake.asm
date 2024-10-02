@@ -1,3 +1,4 @@
+define input 0x3fff
 define directionX 0x1000
 define directionY 0x1001
 define length 0x1002 ; length is double actual snake length; it stores how many bytes the snake array is
@@ -6,6 +7,8 @@ define index 0x1004
 define drawIndex 0x1005
 
 ; we reserve 100 bytes for the snake array; this gives us a max length of 50. 0x1007-0x106b
+
+define delayOuter 0x106c
 
 ; init length
 load # 8
@@ -53,19 +56,57 @@ store appleY
 
 label mainLoop
 
+; input code
+load input
+and # 0x01
+jnz up
+load input
+and # 0x02
+jnz down
+load input
+and # 0x04
+jnz left
+load input
+and # 0x08
+jnz right
+jmp inputDone
+
+label up
+load # 0
+store directionX
+load # -1
+store directionY
+jmp inputDone
+
+label down
+load # 0
+store directionX
+load # 1
+store directionY
+jmp inputDone
+
+label left
+load # -1
+store directionX
+load # 0
+store directionY
+jmp inputDone
+
+label right
+load # 1
+store directionX
+load # 0
+store directionY
+
+label inputDone
+
 ; is snake touching apple
-load # 0x07
-store snakeAddr0
-label snakeAddr0 1
-load 0x1000 ; placeholder
+load 0x1007
 sub appleX
 jnz notTouching
-load # 0x07
-add # 1
-store snakeAddr1
-label snakeAddr1 1
-load 0x1000 ; placeholder
+load 0x1008
 sub appleY
+sub # 0xc0
 jnz notTouching
 
 ; add new snake unit
@@ -163,18 +204,17 @@ jnz moveLoop
 ; set new head position
 load 0x1007
 add directionX
-store 0x1007 ; placeholder
-
+store 0x1007
 load 0x1008
 add directionY
-store 0x1008 ; placeholder
-
-; wrap around
+store 0x1008
 
 ; clear background
 load # 0x40
 store highByte
 label clearBackground
+load # 0
+store lowByte
 label clearRow
 load # 0xff ; white
 label lowByte 1
@@ -183,10 +223,12 @@ store 0 ; placeholder
 load lowByte
 add # 1
 store lowByte
+sub # 50
 jnz clearRow
 load highByte
 add # 1
 store highByte
+sub # 114
 jnz clearBackground
 
 ; draw apple
@@ -228,5 +270,18 @@ store drawIndex
 load length
 sub drawIndex
 jnz drawLoop
+
+; delay to reduce flickering
+load # 0x80
+store delayOuter
+label outerLoop
+load # 0xff
+label delayLoop
+sub # 1
+jnz delayLoop
+load delayOuter
+sub # 1
+store delayOuter
+jnz outerLoop
 
 jmp mainLoop

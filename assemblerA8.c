@@ -82,6 +82,10 @@ int main(int argc, char** argv) {
             machineCodeIndex += 1;
             continue;
         }
+        if (strcmp(opcode, "and") == 0) {
+            machineCodeIndex += 2;
+            continue;
+        }
         if (strcmp(opcode, "label") == 0) {
             strcpy(labelTable[labelIndex].name, strtok(NULL, " "));
             for (int i = 0; i < labelIndex; i++) {
@@ -185,6 +189,20 @@ int main(int argc, char** argv) {
         }
         if (strcmp(opcode, "break") == 0) {
             machineCode[machineCodeIndex] = 12; machineCodeIndex++;
+            continue;
+        }
+        if (strcmp(opcode, "and") == 0) {
+            // immidiate
+            char* token2 = strtok(NULL, " ");
+            if (strcmp(token2, "#") == 0) {
+                machineCode[machineCodeIndex] = 13; machineCodeIndex++;
+                machineCode[machineCodeIndex] = findAddress(strtok(NULL, " ")); machineCodeIndex++;
+            }
+            // memory
+            else {
+                machineCode[machineCodeIndex] = 14; machineCodeIndex++;
+                machineCode[machineCodeIndex] = findAddress(token2); machineCodeIndex++;
+            }
             continue;
         }
         // we still have these to avoid a warning
