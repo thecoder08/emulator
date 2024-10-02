@@ -57,7 +57,7 @@ rl
 break
 and
 ```
-Each operation translates to a machine code instruction. The opcode of load, add, and sub instructions depends on whether the operation is followed by a hash symbol (immidiate value). Any operation not in this list will be ignored by the assembler, allowing for comments.
+Each operation translates to a machine code instruction. The opcodes of load, add, sub, & and instructions depend on whether the operation is followed by a hash symbol (immidiate value). Any operation not in this list will be ignored by the assembler, allowing for comments.
 ### Operands
 Each operand may be a number parsable by the C `strtol` function. It should be no greater that the largest possible integer for the type of operand requested, e.g. 65535 (0xFFFF) for 16-bit operands, or 255 (0xFF) for 8-bit operands. It may also be a symbol, defined by the `define` or `label` commands. Any extra operands for an operation will be ignored by the assembler.
 ### Symbols
