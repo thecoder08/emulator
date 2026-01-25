@@ -1,0 +1,66 @@
+Microcode for Redstone Computer
+
+A blank value in the table means that the corresponding decoder bit can be a one or zero.
+
+Step | Instruction Opcode | Zero Flag | Control Lines
+-----------------------------------------------------
+0    |                    |           | INST         
+7    |                    |           | INCPC        
+1    | 0X01               |           | INCPC        
+2    | 0X01               |           | ACM          
+1    | 0X02               |           | INCPC        
+2    | 0X02               |           | TMPADR       
+3    | 0x02               |           | ADRMUX ACM
+1    | 0X03               |           | INCPC        
+2    | 0X03               |           | TMP          
+3    | 0X03               |           | SUM ALU ACM  
+1    | 0X04               |           | INCPC        
+2    | 0X04               |           | TMPADR       
+3    | 0X04               |           | ADRMUX TMP   
+4    | 0X04               |           | SUM ALU ACM  
+1    | 0X05               |           | INCPC     
+2    | 0X05               |           | TMP          
+3    | 0X05               |           | SUM INB CIN ALU ACM
+1    | 0X06               |           | INCPC        
+2    | 0X06               |           | TMPADR       
+3    | 0X06               |           | ADRMUX TMP   
+4    | 0X06               |           | SUM INB CIN ALU ACM
+1    | 0X07               |           | INCPC        
+2    | 0X07               |           | TMPADR       
+3    | 0X07               |           | ADRMUX DOUT 
+1    | 0X08               |           | INCPC        
+2    | 0X08               |           | JMP        // this might not work; final INCPC will mess things up
+1    | 0X09               |           | INCPC        
+2    | 0X09               | 0         | JMP        // again, might not work
+1    | 0X0A               |           | INCPC LINK // might not work, we have to increment PC one more time before storing in link register. Or maybe not... INCPC is called upon rl instruction
+2    | 0x0A               |           | JMP        // still will mess this up tho
+1    | 0X0B               |           | LINKMUX JMP  
+1    | 0X0C               |           | PAUSE         
+1    | 0X0D               |           | INCPC  
+2    | 0X0D               |           | TMP    
+3    | 0X0D               |           | ALU ACM
+1    | 0X0E               |           | INCPC
+2    | 0X0E               |           | TMPADR 
+3    | 0X0E               |           | ADRMUX TMP
+4    | 0X0E               |           | ALU ACM
+
+List of control lines:
+----------------------
+SUM - set ALU operation to addition/subtraction - otherwise it is bitwise AND
+INB - invert B input
+CIN - carry in
+ALU - set accumulator input to ALU - otherwise it is from data bus
+ACM - clock accumulator
+TMP - clock temporary register (ALU B input)
+INST - clock instruction register
+INCPC - increment program counter
+JMP - clock program counter (from multiplexer)
+TMPADR - clock temporary address register
+ADRMUX - set address multiplexer to temporary address register - otherwise it comes from program counter
+LINK - clock link register (from program counter)
+LINKMUX - set program counter multiplexer to link register - otherwise it comes from data bus
+DOUT - write to memory
+PAUSE - pause clock
+
+load 7
+add # ...

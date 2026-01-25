@@ -1,0 +1,51 @@
+0x00 - no operation
+1. DIN INST
+2. CLTICK INCADR
+0x01 - load immediate
+1. DIN INST
+2. INCADR DIN ACMIN
+3. CLTICK INCADR
+0x02 - load memory
+1. DIN INST
+2. INCADR DIN FETCHIN
+3. FETCHMUX DIN ACMIN
+4. CLTICK INCADR
+0x03 - add immediate
+1. DIN INST
+2. INCADR DIN TMPIN
+3. SUM ACMIN
+4. CLTICK INCADR
+0x04 - add memory
+1. DIN INST
+2. INCADR DIN FETCHIN
+3. FETCHMUX DIN TMPIN
+4. SUM ACMIN
+5. CLTICK INCADR
+0x05 - subtract immediate
+1. DIN INST
+2. INCADR DIN TMPIN
+3. SUB ACMIN
+4. CLTICK INCADR
+0x06 - subtract memory
+1. DIN INST
+2. INCADR DIN FETCHIN
+3. FETCHMUX DIN TMPIN
+4. SUB ACMIN
+5. CLTICK INCADR
+0x07 - store
+1. DIN INST
+2. INCADR DIN FETCHIN
+3. FETCHMUX ACMOUT DOUT
+4. CLTICK INCADR
+0x08 - unconditional jump
+0x09 - conditional jump
+1. DIN INST
+2. INCADR DIN JUMP
+3. CLTICK
+0x0A - jump with link
+1. DIN INST
+2. INCADR DIN 
+0x0B - return to link
+0x0C - breakpoint
+0x0D - bitwise and immediate
+0x0E - bitwise and memory

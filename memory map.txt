@@ -1,0 +1,7 @@
+0x0000-0x3ffb - RAM (shared between code and data). Firmware must be located at 0x0 because that is startup location.
+0x3ffb - 3DProc command register. Write-only.
+0x3ffc - 3DProc data register. Write-only.
+0x3ffd - Disk location register. Write two bytes to set disk read/write location.
+0x3ffe - Disk data register. Read/Write to load/save data to disk. Reading or writing this register increments disk read location.
+0x3fff - Input register. Contains bitmask for controller buttons. Read-only.
+0x4000-0xffff - Framebuffer. Can be used as RAM if disabled.

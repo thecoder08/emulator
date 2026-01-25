@@ -2,6 +2,7 @@
 #include "loadfile.h"
 #include <xgfx/window.h>
 #include <xgfx/drawing.h>
+#include "3dproc.h"
 
 unsigned char memory[0x10000];
 unsigned char a8mode = 0;
@@ -72,6 +73,7 @@ int main(int argc, char** argv) {
             printf("Failed to load Lenna startup image\n");
         }
     }
+    init3D();
     for (int pulse = 0; 1; pulse = (pulse < 10000 ? pulse + 1 : 0)) {
         Event event;
         while (checkWindowEvent(&event)) {
@@ -263,6 +265,7 @@ int main(int argc, char** argv) {
         // update graphics every 10000 instructions
         if (pulse == 0) {
             updateFramebuffer();
+            update3D(); // update 3dProc if enabled
             updateWindow();
         }
     }
